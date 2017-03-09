@@ -1,0 +1,55 @@
+<script>
+	$(document).on('focusin', '.note form', function(){
+		var this_id = $(this).parent().attr('id');
+		console.log('click', this_id);
+		$('#'+this_id).css("background-color", "#9f9");
+		var text = $(this).serialize()
+		$(document).on('focusout', '.note form', function(){
+			var this_id = $(this).parent().attr('id');
+			$('#'+this_id).css("background-color", "#ff9");
+			var newtext = $(this).serialize();
+			if(newtext === text){
+				console.log('no change');
+			}else{
+				$.post('/note/'+this_id, $(this).serialize(), function(data){
+					console.log(data.data)
+				}, "json");
+				return false;
+			}
+		})
+	})
+	$(document).ready(function(){
+    	$('#main').submit(function(){
+      		$.post( '/new_note', $(this).serialize(), function(data){
+          		console.log('Data Received from the Ajax call', data.data);
+          		$('#notes').append("<div class='note' id='"+data.data.id+"'><h4>"+data.data.title+"</h4><form action='/note/"+data.data.id+"' method='post'><input name='authenticity_token' values='<%= form_authenticity_token %>' type='hidden'><textarea name='description' placeholder='Your note here...' rows='6' cols='20'></textarea>")
+          		$('#title').val('');
+        	}, "json"
+      	);
+      	return false;
+    	});
+  	});
+</script>
+
+<h3>Rails Notes</h3>
+
+<div id="notes">
+<% if @notes %>
+	<% @notes.each do |note| %>
+		<div class="note" id="<%= note.id %>">
+			<h4><%= note.title %></h4>
+			<form action="/note/<%= note.id %>" method='post'>
+				<input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+				<textarea name="description" placeholder="Your note here..." rows="6" cols="20"><%= note.description %></textarea>
+			</form>
+		</div>
+	<% end %>
+<% end %>
+</div>
+
+<form id="main" action='/new_note' method='post'>
+	<input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+	Title: <input type='text' name='title' id='title'/>
+	<input type='submit' value='New Note' />
+</form>
+</div>
