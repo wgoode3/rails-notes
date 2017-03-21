@@ -1,11 +1,11 @@
-#rails-notes
+# rails-notes
 Uses AJAX and Ruby on Rails to show easily updatable notecards. 
 
-##Ruby version
+## Ruby version
 * ruby -v 2.2.4p230
 * rails -v 4.2.1
 
-##How to get it running
+## How to get it running
 It may be necessary to comment out:
 ```ruby
 gem 'therubyracer', platform: :ruby
